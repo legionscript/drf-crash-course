@@ -2,14 +2,15 @@ from django.contrib.auth.models import User
 from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework import authentication
-from catalog.serializers import UserSerializer, ArtistSerializer
+from catalog.serializers import UserSerializer, ArtistSerializer, AlbumSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, throttle_classes
 from rest_framework.throttling import UserRateThrottle
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework import mixins
-from .models import Artist
+from rest_framework import viewsets
+from .models import Artist, Album
 
 class UserViewSet(viewsets.ModelViewSet):
 	"""
@@ -18,7 +19,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 	queryset = User.objects.all().order_by('-date_joined')
 	serializer_class = UserSerializer
-	permisson_classes = [permissions.AllowAny]
+	permission_classes = [permissions.AllowAny]
 
 class OncePerDayUserThrottle(UserRateThrottle):
 	rate = '1/day'
@@ -48,7 +49,7 @@ def hello_world(request):
 class ArtistGenericView(mixins.ListModelMixin, mixins.CreateModelMixin, GenericAPIView):
 	queryset = Artist.objects.all()
 	serializer_class = ArtistSerializer
-	permisson_classes = [permissions.AllowAny]
+	permission_classes = [permissions.AllowAny]
 
 	def get(self, request, *args, **kwargs):
 		return self.list(request, *args, **kwargs)
@@ -74,8 +75,15 @@ class ArtistDetailGenericView(mixins.RetrieveModelMixin, mixins.UpdateModelMixin
 class ArtistView(ListCreateAPIView):
 	queryset = Artist.objects.all()
 	serializer_class = ArtistSerializer
-	permisson_classes = [permissions.AllowAny]
+	permission_classes = [permissions.AllowAny]
 
 class ArtistDetailView(RetrieveUpdateDestroyAPIView):
 	queryset = Artist.objects.all()
 	serializer_class = ArtistSerializer
+
+class AlbumViewSet(viewsets.ModelViewSet):
+	# queryset = Album.objects.all()
+	serializer_class = AlbumSerializer
+
+	def get_queryset(self):
+		return Album.objects.all()
