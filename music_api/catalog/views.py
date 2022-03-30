@@ -11,6 +11,7 @@ from rest_framework.generics import GenericAPIView, ListCreateAPIView, RetrieveU
 from rest_framework import mixins
 from rest_framework import viewsets
 from .models import Artist, Album
+from rest_framework.throttling import UserRateThrottle
 
 class UserViewSet(viewsets.ModelViewSet):
 	"""
@@ -50,6 +51,7 @@ class ArtistGenericView(mixins.ListModelMixin, mixins.CreateModelMixin, GenericA
 	queryset = Artist.objects.all()
 	serializer_class = ArtistSerializer
 	permission_classes = [permissions.AllowAny]
+	throttle_classes = [UserRateThrottle]
 
 	def get(self, request, *args, **kwargs):
 		return self.list(request, *args, **kwargs)
@@ -84,6 +86,7 @@ class ArtistDetailView(RetrieveUpdateDestroyAPIView):
 class AlbumViewSet(viewsets.ModelViewSet):
 	# queryset = Album.objects.all()
 	serializer_class = AlbumSerializer
+	throttle_scope = 'albums'
 
 	def get_queryset(self):
 		return Album.objects.all()
