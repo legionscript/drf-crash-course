@@ -1,0 +1,2 @@
+web: gunicorn music_api.wsgi
+release: python manage.py migrate
